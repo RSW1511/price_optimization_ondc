@@ -28,7 +28,7 @@ num_groceries = len(grocery_items)
 num_services = len(services)
 num_customers = 50
 num_transactions = 1000
-num_competitor_prices = 500
+num_competitor_prices = 200
 num_market_data_entries = 100
 
 # Generate Product data including grocery items and services
@@ -87,9 +87,12 @@ competitor_prices = pd.DataFrame({
     'Id': range(1, num_competitor_prices + 1),
     'ProductId': np.random.choice([p['ProductId'] for p in products_data], num_competitor_prices),
     'CompetitorName': np.random.choice(['Amazon', 'Flipkart', 'Walmart'], num_competitor_prices),
-    'Price': np.random.uniform(5, 100, num_competitor_prices),
     'Timestamp': [fake.date_time_this_year() for _ in range(num_competitor_prices)]
 })
+
+# Ensure competitor prices are within +-40% of product prices
+product_prices = {p['ProductId']: p['Price'] for p in products_data}
+competitor_prices['Price'] = [round(np.random.uniform(0.6 * product_prices[pid], 1.4 * product_prices[pid])) for pid in competitor_prices['ProductId']]
 
 # Generate Market Data
 market_data = pd.DataFrame({
